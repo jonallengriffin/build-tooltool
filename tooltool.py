@@ -22,6 +22,7 @@
 # which the manifest file resides in and it should be called
 # 'manifest.manifest'
 
+import base64
 import hashlib
 import httplib
 import json
@@ -724,8 +725,10 @@ def _log_api_error(e):
 def _authorize(req, auth_file):
     if auth_file:
         log.debug("using bearer token in %s" % auth_file)
+        auth = open(auth_file).read().strip().split()
+        base64string = base64.encodestring('%s:%s' % (auth[0], auth[1]))
         req.add_unredirected_header('Authorization',
-                                    'Bearer %s' % (open(auth_file).read().strip()))
+                                    'Basic %s' % (base64string))
 
 
 def _send_batch(base_url, auth_file, batch, region):
